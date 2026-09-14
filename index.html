@@ -139,8 +139,14 @@
   .body{display:none;padding:2px 14px 16px;border-top:1px solid var(--line-soft)}
   .game.is-open .body{display:block}
 
+  .box{width:100%;min-width:0;border-collapse:collapse;margin:10px 0 14px}
+  .box th{font-size:12px;font-weight:600;letter-spacing:0;color:var(--ink-faint);text-align:center;padding:0 4px 3px;border-bottom:1px solid var(--line-soft)}
+  .box th.b-team{text-align:left;padding-left:0}
+  .box td{font-size:15px;text-align:center;padding:5px 4px;border-bottom:0}
+  .box td.b-team{text-align:left;font-weight:500;white-space:nowrap;padding-left:0}
+  .box .b-r{font-weight:600;border-left:1px solid var(--line-soft)}
+  .box .b-x{color:var(--ink-faint)}
   .aff{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--line-soft);font-size:15px;flex-wrap:wrap}
-  .aff-role{color:var(--ink-faint);flex:0 0 52px}
   .aff-team{font-weight:500;flex:0 0 auto}
   .aff-status{margin-left:auto;font-size:14px}
   .aff-status.ok{color:var(--filed)}
@@ -286,6 +292,7 @@ const GAME_DATA = {
   1: {
     filed:    { away:"jpeg", home:"pdf" },   // game1-ducks.jpeg, game1-tigers.pdf
     score:    { away:10, home:11 },
+    line:     { away:[4,1,4,0,1], home:[4,0,2,3,2] },
     pitchers: [
       { team:"Ducks",  name:"J. Williams", pitches:35 },
       { team:"Ducks",  name:"Barnett",     pitches:45 },
@@ -299,6 +306,7 @@ const GAME_DATA = {
   2: {
     filed:    { away:"jpeg", home:null },    // game2-barracudas.jpeg
     score:    { away:6, home:9 },
+    line:     { away:[4,0,0,1,1], home:[0,1,4,1,3] },
     pitchers: [
       { team:"Barracudas", name:"Eli",    pitches:29 },
       { team:"Barracudas", name:"Avery",  pitches:44 },
@@ -308,6 +316,7 @@ const GAME_DATA = {
   3: {
     filed:    { away:null, home:"pdf" },     // game3-royals.pdf
     score:    { away:2, home:12 },
+    line:     { away:[0,0,0,2,0], home:[4,4,0,0,4] },
     pitchers: [
       { team:"Royals", name:"Jesse", pitches:18 },
       { team:"Royals", name:"Casey", pitches:31 },
@@ -348,6 +357,7 @@ const games = SCHEDULE.map(g => {
     dateObj: date,
     upcoming,
     score: data.score || null,
+    line:  data.line || null,
     pitchers: data.pitchers || [],
     awayFiled: !!filed.away,
     homeFiled: !!filed.home,
@@ -431,10 +441,31 @@ function affRow(g, side){
   else if(g.upcoming)status = `<span class="aff-status soon">Not played</span>`;
   else               status = `<span class="aff-status no">Missing</span>`;
   return `<div class="aff">
-      <span class="aff-role">${side === "away" ? "Away" : "Home"}</span>
       <span class="aff-team">${chip(team)}${team}</span>
       ${status}
     </div>`;
+}
+
+function boxScore(g){
+  if(!g.line) return "";
+  const INNINGS = 7;
+  const head = Array.from({length:INNINGS}, (_,i) => `<th>${i+1}</th>`).join("");
+  const row = side => {
+    const team = side === "away" ? g.away : g.home;
+    const runs = g.line[side];
+    const cells = Array.from({length:INNINGS}, (_,i) =>
+      runs[i] === undefined
+        ? `<td class="b-x">x</td>`
+        : `<td>${runs[i]}</td>`).join("");
+    return `<tr>
+        <td class="b-team">${chip(team)}${team}</td>${cells}
+        <td class="b-r">${g.score[side]}</td>
+      </tr>`;
+  };
+  return `<table class="box">
+      <thead><tr><th class="b-team">Box score</th>${head}<th class="b-r">R</th></tr></thead>
+      <tbody>${row("away")}${row("home")}</tbody>
+    </table>`;
 }
 
 function pitcherRows(g){
@@ -504,10 +535,12 @@ function renderLog(){
             <span class="caret">›</span>
           </button>
           <div class="body">
-            ${affRow(g,"away")}
-            ${affRow(g,"home")}
+            ${boxScore(g)}
             <div class="pitchhead">Pitchers</div>
             ${pitcherRows(g)}
+            <div class="pitchhead">Affidavits</div>
+            ${affRow(g,"away")}
+            ${affRow(g,"home")}
           </div>
         </div>`;
       }).join("")}
