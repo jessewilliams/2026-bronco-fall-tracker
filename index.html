@@ -314,13 +314,19 @@ const GAME_DATA = {
     ]
   },
   3: {
-    filed:    { away:null, home:"pdf" },     // game3-royals.pdf
+    filed:    { away:"xlsx", home:"pdf" },   // game3-rangers.xlsx, game3-royals.pdf
+    // Books disagreed on the Royals' 5th: Royals wrote 4 (12 total), Rangers wrote 7 (15).
+    // Resolved in favor of the Royals' book — 4 runs is the per-inning maximum.
     score:    { away:2, home:12 },
     line:     { away:[0,0,0,2,0], home:[4,4,0,0,4] },
     pitchers: [
-      { team:"Royals", name:"Jesse", pitches:18 },
-      { team:"Royals", name:"Casey", pitches:31 },
-      { team:"Royals", name:"Mason", pitches:46 }
+      { team:"Rangers", name:"Mason",  pitches:34 },
+      { team:"Rangers", name:"Carson", pitches:31 },
+      { team:"Rangers", name:"Zach",   pitches:23 },
+      { team:"Rangers", name:"Nick",   pitches:26 },
+      { team:"Royals",  name:"Jesse",  pitches:18 },
+      { team:"Royals",  name:"Casey",  pitches:31 },
+      { team:"Royals",  name:"Mason",  pitches:46 }
     ]
   }
 };
