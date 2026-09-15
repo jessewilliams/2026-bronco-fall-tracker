@@ -69,6 +69,7 @@
   th.t-team{text-align:left}
   td{padding:9px 8px;text-align:right;border-bottom:1px solid var(--line-soft);font-size:16px}
   td.t-team{text-align:left;font-weight:500}
+  td.t-diff{color:var(--ink-soft)}
   td.t-pct{font-weight:600}
   tbody tr.is-focus{background:#e3eaf0}
   .chip{
@@ -195,7 +196,7 @@
       <thead>
         <tr>
           <th class="t-team">Team</th><th>W</th><th>L</th><th>T</th>
-          <th>GP</th><th>RS</th><th>RA</th><th>PCT</th>
+          <th>RS</th><th>RA</th><th>DIFF</th><th>PCT</th>
         </tr>
       </thead>
       <tbody id="standings-body"></tbody>
@@ -409,11 +410,13 @@ function standings(){
   });
   return Object.values(rows).map(r => {
     r.pct = r.gp ? (r.w + 0.5 * r.t_) / r.gp : null;
+    r.diff = r.rs - r.ra;
     return r;
   }).sort((x,y) => {
     const px = x.pct === null ? -1 : x.pct;
     const py = y.pct === null ? -1 : y.pct;
     if(py !== px) return py - px;
+    if(y.diff !== x.diff) return y.diff - x.diff;
     return TIEBREAKER.indexOf(x.team) - TIEBREAKER.indexOf(y.team);
   });
 }
@@ -432,7 +435,8 @@ function renderStandings(){
     <tr class="${activeTeam === r.team ? "is-focus" : ""}">
       <td class="t-team">${chip(r.team)}${r.team}</td>
       <td>${r.w}</td><td>${r.l}</td><td>${r.t_}</td>
-      <td>${r.gp}</td><td>${r.rs}</td><td>${r.ra}</td>
+      <td>${r.rs}</td><td>${r.ra}</td>
+      <td class="t-diff">${r.gp ? (r.diff > 0 ? "+" : "") + r.diff : '<span class="muted">—</span>'}</td>
       <td class="t-pct">${r.pct === null ? '<span class="muted">—</span>' : r.pct.toFixed(3).replace(/^0/,"")}</td>
     </tr>`).join("");
 }
