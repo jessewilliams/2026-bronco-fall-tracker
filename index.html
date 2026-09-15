@@ -19,6 +19,7 @@
     --filed:#2f8f4e;
     --missing:#b9c3ca;
     --alert:#c9432f;
+    --late:#c9a227;
     --radius:6px;
     --maxw:940px;
   }
@@ -127,6 +128,8 @@
   .dots{display:flex;gap:5px;flex:0 0 auto}
   .dot{width:10px;height:10px;border-radius:50%;background:var(--missing)}
   .dot.is-filed{background:var(--filed)}
+  .dot.is-late{background:var(--late)}
+  .dot.is-overdue{background:var(--alert)}
   .dot.is-upcoming{background:var(--missing);opacity:.3}
   .gamenum{flex:0 0 26px;font-size:15px;color:var(--ink-faint)}
   .slot{flex:0 0 68px;font-size:16px;color:var(--ink-soft)}
@@ -151,6 +154,7 @@
   .aff-status{margin-left:auto;font-size:14px}
   .aff-status.ok{color:var(--filed)}
   .aff-status.no{color:var(--alert)}
+  .aff-status.late{color:#8e7314}
   .aff-status.soon{color:var(--ink-faint)}
 
   .pitchhead{font-size:14px;font-weight:600;color:var(--ink-soft);margin:16px 0 4px}
@@ -372,6 +376,17 @@ const games = SCHEDULE.map(g => {
   };
 });
 
+// State of one team's affidavit: filed / upcoming / late / overdue.
+// Overdue = the team's next scheduled game has itself already been played.
+function affState(g, side){
+  if(side === "away" ? g.awayFiled : g.homeFiled) return "filed";
+  if(g.upcoming) return "upcoming";
+  const team = side === "away" ? g.away : g.home;
+  const next = games.find(x =>
+    x.dateObj > g.dateObj && (x.away === team || x.home === team));
+  return (next && next.dateObj <= TODAY) ? "overdue" : "late";
+}
+
 function bothFiled(g){ return g.awayFiled && g.homeFiled; }
 function isMissing(g){ return !g.upcoming && !bothFiled(g); }
 
@@ -442,10 +457,13 @@ function renderStats(){
 function affRow(g, side){
   const team  = side === "away" ? g.away : g.home;
   const filed = side === "away" ? g.awayFiled : g.homeFiled;
-  let status;
-  if(filed)          status = `<span class="aff-status ok">Filed</span>`;
-  else if(g.upcoming)status = `<span class="aff-status soon">Not played</span>`;
-  else               status = `<span class="aff-status no">Missing</span>`;
+  const state = affState(g, side);
+  const status = {
+    filed:    `<span class="aff-status ok">Filed</span>`,
+    upcoming: `<span class="aff-status soon">Not played</span>`,
+    late:     `<span class="aff-status late">Missing</span>`,
+    overdue:  `<span class="aff-status no">Missing — overdue</span>`
+  }[state];
   return `<div class="aff">
       <span class="aff-team">${chip(team)}${team}</span>
       ${status}
@@ -498,9 +516,14 @@ function pitcherRows(g){
   }).join("");
 }
 
-function dotClass(filed, upcoming){
-  if(upcoming) return "dot is-upcoming";
-  return filed ? "dot is-filed" : "dot";
+const DOT_LABEL = {
+  filed:"affidavit filed", upcoming:"not played yet",
+  late:"affidavit missing", overdue:"affidavit overdue"
+};
+function dot(g, side){
+  const state = affState(g, side);
+  const team = side === "away" ? g.away : g.home;
+  return `<span class="dot is-${state}" title="${team} — ${DOT_LABEL[state]}"></span>`;
 }
 
 function renderLog(){
@@ -530,10 +553,7 @@ function renderLog(){
         const score = g.score ? `<span class="score">${g.score.away}–${g.score.home}</span>` : "";
         return `<div class="game${open ? " is-open" : ""}" data-game="${g.n}">
           <button class="gamehead" aria-expanded="${open}">
-            <span class="dots">
-              <span class="${dotClass(g.awayFiled, g.upcoming)}" title="${g.away} affidavit"></span>
-              <span class="${dotClass(g.homeFiled, g.upcoming)}" title="${g.home} affidavit"></span>
-            </span>
+            <span class="dots">${dot(g,"away")}${dot(g,"home")}</span>
             <span class="gamenum">${g.n}</span>
             <span class="slot">${g.time}</span>
             <span class="matchup">${g.away}<span class="at">@</span>${g.home}</span>
