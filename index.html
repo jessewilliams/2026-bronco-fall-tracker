@@ -300,9 +300,9 @@ const GAME_DATA = {
     line:     { away:[4,1,4,0,1], home:[4,0,2,3,2] },
     pitchers: [
       { team:"Ducks",  name:"J. Williams", pitches:35 },
-      { team:"Ducks",  name:"Barnett",     pitches:45 },
-      { team:"Ducks",  name:"Miceli",      pitches:20 },
-      { team:"Ducks",  name:"Soria",       pitches:46 },
+      { team:"Ducks",  name:"N. Tognetti", pitches:45 },
+      { team:"Ducks",  name:"J. Miceli",   pitches:20 },
+      { team:"Ducks",  name:"B. Soria",    pitches:46 },
       { team:"Tigers", name:"Rhett",       pitches:50 },
       { team:"Tigers", name:"Henrik",      pitches:28 },
       { team:"Tigers", name:"Dario",       pitches:33 }
@@ -319,6 +319,47 @@ const GAME_DATA = {
       { team:"Regulators", name:"Anthony V", pitches:49 },
       { team:"Regulators", name:"Kaleb H",   pitches:26 },
       { team:"Regulators", name:"Dylan L",   pitches:23 }
+    ]
+  },
+  // Week 2 — Sat, Sep 19
+  4: {
+    filed:    { away:"pdf", home:"jpeg" },   // game4-royals.pdf, game4-barracudas.jpeg
+    score:    { away:12, home:6 },
+    line:     { away:[4,0,0,4,0,4], home:[1,0,4,0,1,0] },
+    // Barracudas counts now from their own book (Royals had the slot-1 pitcher
+    // as "Niklaus" at 67; their book says Avery at 66).
+    pitchers: [
+      { team:"Royals",     name:"Casey",   pitches:44 },
+      { team:"Royals",     name:"Mason",   pitches:14 },
+      { team:"Royals",     name:"Jesse",   pitches:25 },
+      { team:"Royals",     name:"Cameron", pitches:33 },
+      { team:"Barracudas", name:"Avery",   pitches:66 },
+      { team:"Barracudas", name:"Eli",     pitches:48 },
+      { team:"Barracudas", name:"Brixton", pitches:38 }
+    ]
+  },
+  5: {
+    filed:    { away:"jpeg", home:"png" },   // game5-ducks.jpeg, game5-rangers.png
+    score:    { away:10, home:6 },
+    line:     { away:[0,4,3,3], home:[1,0,1,4] },
+    pitchers: [
+      { team:"Ducks",   name:"N. Tognetti", pitches:38 },
+      { team:"Ducks",   name:"G. Leimas",   pitches:34 },
+      { team:"Ducks",   name:"J. Miceli",   pitches:35 },
+      { team:"Ducks",   name:"C. James",    pitches:30 },
+      { team:"Rangers", name:"Corbin",      pitches:22 },
+      { team:"Rangers", name:"Nick",        pitches:21 },
+      { team:"Rangers", name:"Chase",       pitches:38 }
+    ]
+  },
+  6: {
+    filed:    { away:null, home:"xlsx" },    // game6-regulators.xlsx
+    score:    { away:7, home:14 },
+    line:     { away:[3,1,1,0,2], home:[4,4,3,2,1] },
+    pitchers: [
+      { team:"Regulators", name:"Anthony V", pitches:37 },
+      { team:"Regulators", name:"Kaleb H",   pitches:32 },
+      { team:"Regulators", name:"Dylan L",   pitches:48 }
     ]
   },
   3: {
